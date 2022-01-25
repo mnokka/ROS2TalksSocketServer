@@ -29,11 +29,25 @@ MinimalPublisher::MinimalPublisher()
 
 void MinimalPublisher::timer_callback(void)
 {
+
+	static int randnumber;
+	static int counter=0;
+	/* initialize random seed: */
+	srand (time(NULL));
+
+  /* generate secret number between 1 and 100: */
+  randnumber = rand() % 100 + 1;
   auto message = std_msgs::msg::String();
-  message.data = "Messaging messaging " + std::to_string(count_++);
+ // message.data = "Messaging messaging " + std::to_string(count_++);
+  message.data = std::to_string(count_++) + ": Measured temperature: " + std::to_string(randnumber);
   RCLCPP_INFO(this->get_logger(), "First publisher.Publishing: '%s'", message.data.c_str());
   publisher_->publish(message);
-  SendSocket(message.data.c_str());
+  if (counter>5) {
+	  SendSocket(message.data.c_str());
+	  counter=0;
+  }
+  counter++;
+
 }
 
 
@@ -41,8 +55,9 @@ void MinimalPublisher::SendSocket(const char *message) {
 	printf("SendSocket called ....\n");
 	std::cout << "ROS2 message passed to socket server: " << message <<"\n";
 
-	int sock = 0, valread;
-	struct sockaddr_in serv_addr;
+	static int sock = 0;//, valread;
+
+	static struct sockaddr_in serv_addr;
 	char buffer[1024] = {0};
 
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -68,7 +83,7 @@ void MinimalPublisher::SendSocket(const char *message) {
 			}
 
 	send(sock , message , strlen(message) , 0 );
-	valread = read( sock , buffer, 1024);
+	//valread = read( sock , buffer, 1024);
 	printf("%s\n",buffer );
     std::cout << "--------------------------------------------------------------------------------------------\n";
 
