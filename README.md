@@ -18,3 +18,7 @@ New running shell: <br>
 Clean:  <br>
     <ROS2 area / src >  <br>
     rm -rf build install log <br>
+    
+  <br>  
+Qt based socket server to read messages from this ROS2 sender:  mnokka /
+qtserverclient 
